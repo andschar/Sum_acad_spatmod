@@ -1,10 +1,13 @@
 ###
-setwd("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/")
+# setwd("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/")
+resultdir = file.path(getwd(), 'results')
 library(rgdal)
 library(maptools)
+library(mapview)
 # library for GDAL/OGR drivers
 #import shapefile - you need to set your path to the file here!
-landcover <- readOGR("/Users/ralfs/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/Landcover", layer="mwi_gc_adg")
+landcover <- readOGR("/home/andreas/Documents/Projects/Sum_acad_spatmod/data/mwi_gc_adg",
+                     layer="mwi_gc_adg")
 # enter shapefile directory and filename without file extension
 # data taken from http://www.fao.org/geonetwork/srv/en/main.home?uuid=5153876a-1afa-4c5f-8606-228f928d16fe
 # Regional land cover data for Malawi
@@ -42,11 +45,15 @@ crop_comb <- unionSpatialPolygons(cropmwi, rep(1, length(cropmwi@data$GRIDCODE))
 crop_trans <- spTransform(crop_comb, CRS("+init= PLACE CODE HERE "))
 
 # area calculation
+crop_trans@polygons
+
+str(crop_trans)
+# crop_trans@polygons[[1]]@Polygons[[1]]@area
 areas <- sapply(slot(crop_trans, "polygons"), function(x) sapply(slot(x, "Polygons"), slot, "area"))
 sum(areas)/(1000*1000)
 # 27244.1 is more plausible
 
 # we write the file as Rdata object
 # uncomment to save
-# save(crop_trans, file = "Crop_trans.RData")
+save(crop_trans, file = file.path(resultdir, "Crop_trans.RData"))
 
