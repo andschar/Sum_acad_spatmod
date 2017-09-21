@@ -7,7 +7,7 @@ library(mapview)
 
 # library for GDAL/OGR drivers
 # import shapefile - you need to set your path to the file here!
-resultdir <- file.path(getwd(), 'results')
+resultdir <- '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
 landcover <- readOGR("/home/andreas/Documents/Projects/Sum_acad_spatmod/data/mwi_gc_adg",
                      layer="mwi_gc_adg")
 # enter shapefile directory and filename without file extension
