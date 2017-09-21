@@ -1,34 +1,37 @@
 # Computation of Runoff potential
 
+require(mapview)
+
 # first we load all maps into R
 # and process them individually
-setwd('~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling')
+setwd('/home/andreas/Documents/Projects/Sum_acad_spatmod')
+resultdir <- '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
 # load slope
 # loading is fairly easy in Rstudio:
 # you can open the file over the file menu (double click)
-load('~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/DEM/Slope.RData')
+load(file.path(resultdir, 'Slope.RData'))
 
 # load buffered streams
-load('~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/DEM/Buff_stream.RData')
+load(file.path(resultdir, 'Buff_stream.RData'))
 
 # load crop land
-load('~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/Landcover/Crop_trans.RData')
+load(file.path(resultdir, 'Crop_trans.RData'))
 
 # Soil OC
 library(rgdal)
-oc <- readGDAL("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/OC_Avit/Average_Soil_Organic_Carbon_raster.tif")
+oc <- readGDAL("/home/andreas/Documents/Projects/Sum_acad_spatmod/data/Average_Soil_Organic_Carbon_raster.tif")
 image(oc)
 
 # we check that information are loaded
 ls()
-
+str(oc)
 # we begin processing the OC
 oc@data$band2 <- 1/(1+(10*oc@data$band1))
 # check that result is plausible
 summary(oc@data$band2)
 
 # multiply with interception term
-oc@data$band3 <-  oc@data$band2*(1-25/100)
+oc@data$band3 <- oc@data$band2*(1-25/100)
 
 # and multiply with application rate
 # we transform the CRS before in order to
@@ -37,6 +40,7 @@ oc@data$band3 <-  oc@data$band2*(1-25/100)
 library(raster)
 ocras <- raster(oc["band3"])
 ocras_trans <- projectRaster(ocras, crs = stream_buf@proj4string, res = 1000)
+mapview(ocras)
 
 # check resolution
 ocras_trans
@@ -57,7 +61,7 @@ summary(slp)
 # same number of NAs, makes sense
 
 # now we use the max Rainfall to compute the respective function f(P,T)
-rain_max <- readGDAL("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/Rainfall/Precip.tif")
+rain_max <- readGDAL(file.path(resultdir, "Precip.tif"))
 class(rain_max)
 summary(rain_max@data)
 # calculate after replication of file
@@ -90,10 +94,13 @@ crop_trans@proj4string
 identical(crop_trans@proj4string, CRS(projection(ocras_fin)))
 # match!
 
-# crop_trans_r <- rasterize(crop_trans, ocras_fin, getCover=TRUE)
+time = Sys.time()
+crop_trans_r <- rasterize(crop_trans, ocras_fin, getCover=TRUE)
+Sys.time() - time
+save(crop_trans_r, file = file.path(resultdir, 'crop_trans_r.RData'))
 # this function runs ~ 10 minutes on a Core i7 with 2.3 Ghz and 8 GB RAM
 # download if you have a slow computer and load (you should know by now...)
-load('~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/crop_trans_r.RData')
+load(file.path(resultdir, 'crop_trans_r.RData'))
 plot(crop_trans_r)
 # looks plausible
 # divide by 100 as should be between 0 and 1
@@ -128,13 +135,13 @@ stream_buf@proj4string
 
 # mask cells that are not around streams
 rp_mal <- rasterize(stream_buf,final_rpsq, mask = TRUE)
-plot(rp_mal)
+mapview(rp_mal)
 # export to google earth for web presentation
 # set name for layer
 rp_mal@data@names <- "RP"
 # load kml package
 # if you do not have this package - install first
-# install.packages("plotKML", repos=c("http://R-Forge.R-project.org"))
+# install.packages("plotKML", repos=c("http://R-Forge.R-project.org")) #! DIDN'T WORK FOR ME!
 library(plotKML)
 data(SAGA_pal)
 kml(rp_mal, colour_scale = SAGA_pal[[1]], colour = "RP")
