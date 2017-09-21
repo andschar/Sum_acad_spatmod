@@ -28,7 +28,7 @@ library(raster)
 library(mapview)
 
 # read raster files with daily precipitation
-rasfiles <- list.files(path= paste(getwd(),"/ARC2/", sep=""),full.names=TRUE)  
+rasfiles <- list.files(path= paste(getwd(),"/ARC2", sep=""),full.names=TRUE)  
 # alternative: set path directly
 # rasfiles <- list.files(path="~/Desktop/Data/", full.names = TRUE)
 
@@ -48,7 +48,7 @@ rain_data <- stack(as.list(rasfiles[fil_sel]))
 # needs modification of the OSGEO installation path on Windows
 # Sys.setenv(PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Library/Frameworks/GDAL.framework/Programs")
 # system(command = paste("gdalinfo", rasfiles[fil_sel][1]))
-getData()
+raster::getData()
 # in the next step we crop the extent to Malawi and a bit of the surrounding
 getData("ISO3")
 # overview on country names
