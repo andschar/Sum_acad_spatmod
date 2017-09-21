@@ -7,7 +7,7 @@ file.choose()
 #
 # set working directory - enter your directory here
 setwd("/home/andreas/Documents/Projects/Sum_acad_spatmod/Precipitation_data/")
-resultdir = file.path(getwd(), 'results')
+resultdir = '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
 
 # we prepare precipitation data
 # this data was downloaded from
@@ -48,9 +48,9 @@ rain_data <- stack(as.list(rasfiles[fil_sel]))
 # needs modification of the OSGEO installation path on Windows
 # Sys.setenv(PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Library/Frameworks/GDAL.framework/Programs")
 # system(command = paste("gdalinfo", rasfiles[fil_sel][1]))
-raster::getData()
+
 # in the next step we crop the extent to Malawi and a bit of the surrounding
-getData("ISO3")
+raster::getData("ISO3")
 # overview on country names
 mwi_gadm  <- getData("GADM", country="MWI", level=0) # GADM = Global ADMinistrative boundaries
 # you will find a R data file now in your working directory
@@ -95,6 +95,6 @@ mapview(max_mal) +
 
 precip_mal <- projectRaster(max_mal, crs=CRS("+init=epsg:4326"))
 # and write it to disk
-writeRaster(precip_mal, file.path(resultdir, "Precip.tif"), format="GTiff")
+writeRaster(precip_mal, file.path(resultdir, "Precip.tif"), format="GTiff", overwrite = TRUE)
 
 
