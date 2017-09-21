@@ -2,10 +2,11 @@
 # Check dominant soil texture  #
 ################################
 # First set your working directory, need to adapt
-setwd("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/Soil_grids")
+setwd("/home/andreas/Documents/Projects/Sum_acad_spatmod/Soil_grids")
+resultdir <- '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
 # load library for raster processing
 library(raster)
-# We use data from www.soilgrids.org that is provided by ISRIC
+# We use data from www.soilgrids.org that is provided by ISRIC - International Soil Reference and Information Centre
 # The data is ready for the course, a tutorial how to download is here
 # http://gsif.isric.org/doku.php/wiki:tutorial_soilgrids
 
@@ -13,12 +14,16 @@ library(raster)
 sand <- raster("geonode_sndppt_m_sl1_250m.tif")
 silt <- raster("geonode_sltppt_m_sl1_250m.tif")
 # load country borders - we have downloaded the file before
-maw_gadm <- readRDS("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/Rainfall/GADM_2.8_MWI_adm0.rds")
+maw_gadm <- readRDS(file.path(resultdir, "GADM_2.8_MWI_adm0.rds"))
 # you need to adapt to your path here!
 # check that CRS of country borders and soil layers is identical
 identical(maw_gadm@proj4string, sand@crs)
+
+mapview(sand)
+
 # crop layer to extent of malawi
 sand_sub1 <- crop(sand, maw_gadm)
+spplot(sand_sub1)
 # mask values outside of Malawi
 sand_sub2 <- mask(sand_sub1, maw_gadm)
 spplot(sand_sub2)
