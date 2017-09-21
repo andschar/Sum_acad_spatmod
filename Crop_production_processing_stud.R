@@ -1,11 +1,13 @@
 ###
 # setwd("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/")
-resultdir = file.path(getwd(), 'results')
+
 library(rgdal)
 library(maptools)
 library(mapview)
+
 # library for GDAL/OGR drivers
-#import shapefile - you need to set your path to the file here!
+# import shapefile - you need to set your path to the file here!
+resultdir <- file.path(getwd(), 'results')
 landcover <- readOGR("/home/andreas/Documents/Projects/Sum_acad_spatmod/data/mwi_gc_adg",
                      layer="mwi_gc_adg")
 # enter shapefile directory and filename without file extension
