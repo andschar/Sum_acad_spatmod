@@ -52,7 +52,8 @@ rain_data <- stack(as.list(rasfiles[fil_sel]))
 # in the next step we crop the extent to Malawi and a bit of the surrounding
 raster::getData("ISO3")
 # overview on country names
-mwi_gadm  <- getData("GADM", country="MWI", level=0) # GADM = Global ADMinistrative boundaries
+mwi_gadm  <- getData("GADM", country="MWI", level=0,
+                     path = resultdir) # GADM = Global ADMinistrative boundaries
 # you will find a R data file now in your working directory
 plot(mwi_gadm)
 mapview(mwi_gadm)
