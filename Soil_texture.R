@@ -23,6 +23,7 @@ mapview(sand)
 
 # crop layer to extent of malawi
 sand_sub1 <- crop(sand, maw_gadm)
+
 spplot(sand_sub1)
 # mask values outside of Malawi
 sand_sub2 <- mask(sand_sub1, maw_gadm)
@@ -41,4 +42,5 @@ silt_sub2 <- mask(silt_sub1, maw_gadm)
 spplot(silt_sub2)
 # no areas with more than 25% silt content
 
-# Runoff model could be run soil specific, for reasons of simplicity, we assume that sand is generally dominant
+# Runoff model could be run soil specific, for reasons of simplicity,
+# we assume that sand is generally dominant

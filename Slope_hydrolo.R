@@ -7,15 +7,19 @@ resultdir <- '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
 # SRTM 90 m data is directly available in R
 library(raster)
 library(rgdal)
+
 mwi_dem <- getData("alt", country="MWI", mask=TRUE)
 mwi_dem@crs
+projection(mwi_dem)
+
 mapview(mwi_dem)
 # WGS84 projection
 
 # derive slope
+terrain()
 slp <- raster::terrain(mwi_dem, opt = "slope", unit = "degrees")
 # and plot
-plot(slp)
+mapview(slp)
 
 # only few areas with high slope
 # save slp layer - uncomment if necessary
@@ -33,7 +37,8 @@ save(slp, file = file.path(resultdir, "Slope.RData"))
 # writeOGR(gadm, "/Users/ralfs/Arbeit/Lehre_Betreuung/2014/Summer_academy/Modelling/Rainfall/", "Malawi", "ESRI Shapefile") 
 
 # load the river network for Malawi
-streams <- readOGR("/home/andreas/Documents/Projects/Sum_acad_spatmod/DEM_hydro/Hydrosheds", layer="mal_riv_15s")
+streams <- readOGR("/home/andreas/Documents/Projects/Sum_acad_spatmod/DEM_hydro/Hydrosheds",
+                   layer="mal_riv_15s")
 mapview(streams)
 
 getwd()
@@ -42,7 +47,8 @@ getwd()
 stream_trans <- spTransform(streams, CRS("+init=epsg:32736"))
 # then we load the rgeos library and buffer
 library(rgeos)
-stream_buf <-  gBuffer(stream_trans, width = 200)
+
+stream_buf <- gBuffer(stream_trans, width = 200)
 mapview(stream_buf)
 # buffered network
 save(stream_buf, file = file.path(resultdir, "Buff_stream.RData"))

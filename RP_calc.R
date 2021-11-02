@@ -73,6 +73,7 @@ summary(rain_rp@data$band1)
 # looks plausible
 
 # check relationship between rain and surface runoff
+dev.off()
 plot(rain_max@data$band1, rain_rp@data$band1)
 
 # final values for RP calculated as f(P,T)/P
@@ -121,6 +122,7 @@ rain_ras_fin <- projectRaster(rain_ras, ocras_fin)
 
 # combine all layers
 final_rp <- crop_fin*ocras_fin* fin_slp*rain_ras_fin
+mapview(final_rp)
 hist(final_rp)
 # double square root transformation
 # note that in the literature often log is used

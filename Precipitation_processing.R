@@ -7,7 +7,8 @@ file.choose()
 #
 # set working directory - enter your directory here
 setwd("/home/andreas/Documents/Projects/Sum_acad_spatmod/Precipitation_data/")
-resultdir = '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
+setwd("C:\\Desktop")
+resultdir <- '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
 
 # we prepare precipitation data
 # this data was downloaded from
@@ -29,6 +30,7 @@ library(mapview)
 
 # read raster files with daily precipitation
 rasfiles <- list.files(path= paste(getwd(),"/ARC2", sep=""),full.names=TRUE)  
+rasfiles
 # alternative: set path directly
 # rasfiles <- list.files(path="~/Desktop/Data/", full.names = TRUE)
 
@@ -39,7 +41,7 @@ fil_sel <- grep("*tif", rasfiles)
 rasfiles[fil_sel]
 
 # create a layer stack, i.e. files with same resolution, extent etc.
-rain_data <- stack(as.list(rasfiles[fil_sel]))
+rain_data <- raster::stack(as.list(rasfiles[fil_sel]))
 # you can google the coordinate reference system
 # we will convert it later
 
@@ -58,8 +60,12 @@ mwi_gadm  <- getData("GADM", country="MWI", level=0,
 plot(mwi_gadm)
 mapview(mwi_gadm)
 
+projection(mwi_trans)
+projection(rain_data)
+
 # and convert CRS to the rasterstack
 mwi_trans <- spTransform(mwi_gadm, rain_data@crs)
+
 mapview(mwi_gadm) +
   mapview(mwi_trans)
 
