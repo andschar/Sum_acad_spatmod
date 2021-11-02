@@ -6,7 +6,9 @@ file.choose()
 # afterwards copy and paste your path (without file name!) into the setwd function
 #
 # set working directory - enter your directory here
-setwd("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/Precipitation_data/")
+setwd("/home/andreas/Documents/Projects/Sum_acad_spatmod/Precipitation_data/")
+setwd("C:\\Desktop")
+resultdir <- '/home/andreas/Documents/Projects/Sum_acad_spatmod/results'
 
 # we prepare precipitation data
 # this data was downloaded from
@@ -24,9 +26,11 @@ setwd("~/Arbeit/Lehre_Betreuung/2017/SS/Summer_academy/Modelling/Precipitation_d
 
 # load library
 library(raster)
+library(mapview)
 
 # read raster files with daily precipitation
-rasfiles <- list.files(path= paste(getwd(),"/ARC2/", sep=""),full.names=TRUE)  
+rasfiles <- list.files(path= paste(getwd(),"/ARC2", sep=""),full.names=TRUE)  
+rasfiles
 # alternative: set path directly
 # rasfiles <- list.files(path="~/Desktop/Data/", full.names = TRUE)
 
@@ -37,7 +41,7 @@ fil_sel <- grep("*tif", rasfiles)
 rasfiles[fil_sel]
 
 # create a layer stack, i.e. files with same resolution, extent etc.
-rain_data <- stack(as.list(rasfiles[fil_sel]))
+rain_data <- raster::stack(as.list(rasfiles[fil_sel]))
 # you can google the coordinate reference system
 # we will convert it later
 
@@ -48,14 +52,22 @@ rain_data <- stack(as.list(rasfiles[fil_sel]))
 # system(command = paste("gdalinfo", rasfiles[fil_sel][1]))
 
 # in the next step we crop the extent to Malawi and a bit of the surrounding
-getData("ISO3")
+raster::getData("ISO3")
 # overview on country names
-mwi_gadm  <- getData("GADM", country="MWI", level=0)
+mwi_gadm  <- getData("GADM", country="MWI", level=0,
+                     path = resultdir) # GADM = Global ADMinistrative boundaries
 # you will find a R data file now in your working directory
 plot(mwi_gadm)
+mapview(mwi_gadm)
+
+projection(mwi_trans)
+projection(rain_data)
 
 # and convert CRS to the rasterstack
 mwi_trans <- spTransform(mwi_gadm, rain_data@crs)
+
+mapview(mwi_gadm) +
+  mapview(mwi_trans)
 
 # plot for defined region
 plot(mwi_trans, col="white", xlim=c(30,40), ylim=c(-20, -5))
@@ -72,6 +84,8 @@ plot(mal_rain)
 # plots the first 16
 plot(mal_rain, 16:25)
 # plots defined rasters
+mapview(mal_rain) +
+  mapview(mwi_trans)
 
 # and now use the maximum cell value 
 max_mal <- max(mal_rain)
@@ -81,10 +95,13 @@ plot(max_mal)
 plot(mwi_trans, add=TRUE)
 # we notice that the GADM polygon is much more precise
 
+mapview(max_mal) +
+  mapview(mwi_trans)
+
 # we convert the raster file to WGS84
 
 precip_mal <- projectRaster(max_mal, crs=CRS("+init=epsg:4326"))
 # and write it to disk
-# writeRaster(precip_mal, "Precip.tif", format="GTiff")
+writeRaster(precip_mal, file.path(resultdir, "Precip.tif"), format="GTiff", overwrite = TRUE)
 
 
